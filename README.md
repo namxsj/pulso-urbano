@@ -56,7 +56,7 @@ streamlit run app.py
 
 ## Links
 
-- **GitHub Pages:** 
+- **GitHub Pages:** https://namxsj.github.io/pulso-urbano/
 - **Dashboard Streamlit:** https://pulso-urbano.streamlit.app/
 
 ## Funcionalidades
