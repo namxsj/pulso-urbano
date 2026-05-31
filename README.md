@@ -56,8 +56,8 @@ streamlit run app.py
 
 ## Links
 
-- **GitHub Pages:** [https://seu-usuario.github.io/projeto-criminalidade](https://seu-usuario.github.io/projeto-criminalidade)
-- **Dashboard Streamlit:** [https://seu-usuario.streamlit.app](https://seu-usuario.streamlit.app)
+- **GitHub Pages:** 
+- **Dashboard Streamlit:** https://pulso-urbano.streamlit.app/
 
 ## Funcionalidades
 
