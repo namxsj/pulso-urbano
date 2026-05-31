@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Projeto Criminalidade no Brasil</title>
+   <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root{
+            --bg:#121827;
+            --card:#111520;
+            --card2:#161b2a;
+
+            --primary:#7c3aed;
+            --primary-light:#a78bfa;
+
+            --text:#e2e8f0;
+            --sub:#8892a4;
+
+            --border:#1e2535;
+        }
+
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+        }
+
+        body{
+            font-family: Arial, Helvetica, sans-serif;
+            background:var(--bg);
+            color:var(--text);
+            line-height:1.7;
+        }
+
+        header{
+    background:linear-gradient(
+        -45deg,
+        #0b0e17,
+        #1e1540,
+        #312e81,
+        #7c3aed
+    );
+
+    background-size:400% 400%;
+    animation:gradientMove 12s ease infinite;
+
+    padding:90px 20px;
+    text-align:center;
+}
+  header h1{
+    font-family: "Playfair Display", serif;
+
+    font-size: 7rem;
+    font-weight: 900;
+
+    color: #cbd5e1;
+
+    letter-spacing: -5px;
+
+    text-shadow:
+        2px 2px 0px #5b21b6,
+        0 0 12px rgba(91,33,182,0.25);
+
+    margin-bottom: 15px;
+
+    transform: scaleX(1.03);
+}
+    header p{
+    display:inline-block;
+
+    background:rgba(114,50,220,0.10);
+
+    border:1px solid rgba(167,139,250,0.18);
+
+    padding:14px 24px;
+
+    border-radius:12px;
+
+    color:#f5f5f5;
+
+    font-size:1.1rem;
+
+    font-weight:700;
+
+    line-height:1.8;
+
+    letter-spacing:0.2px;
+
+    backdrop-filter:blur(6px);
+
+    box-shadow:
+        0 0 25px rgba(124,58,237,.08);
+
+    margin-top:20px;
+}
+
+        main{
+            max-width:1200px;
+            margin:auto;
+            padding:40px 20px;
+        }
+
+        section{
+            background:var(--card);
+            border:1px solid var(--border);
+            border-radius:14px;
+
+            padding:30px;
+            margin-bottom:25px;
+        }
+
+        h2{
+    font-family:'Montserrat', sans-serif;
+
+    color:#cbd5e1;
+
+    font-size:1.9rem;
+
+    font-weight:700;
+
+    letter-spacing:-0.5px;
+
+    margin-bottom:18px;
+
+    border-left:4px solid #7c3aed;
+
+    padding-left:12px;
+}
+
+        .grid{
+            display:grid;
+            grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+            gap:18px;
+        }
+
+        .card{
+    background:rgba(255,255,255,0.03);
+
+    backdrop-filter:blur(10px);
+
+    border:1px solid rgba(167,139,250,0.15);
+    border-left:4px solid var(--primary);
+
+    padding:18px;
+    border-radius:12px;
+
+    transition:.3s;
+}
+        .card:hover{
+            transform:translateY(-3px);
+        }
+
+        .button{
+            display:inline-block;
+
+            background:var(--primary);
+            color:white;
+
+            padding:12px 18px;
+            margin:5px;
+
+            text-decoration:none;
+            border-radius:8px;
+
+            transition:.3s;
+        }
+
+        .button:hover{
+            background:#6d28d9;
+        }
+
+        footer{
+            text-align:center;
+
+            padding:30px;
+
+            border-top:1px solid var(--border);
+
+            color:var(--sub);
+        }
+
+        ul{
+            padding-left:20px;
+        }
+
+        li{
+            margin-bottom:8px;
+        }
+@keyframes gradientMove{
+    0%{
+        background-position:0% 50%;
+    }
+    50%{
+        background-position:100% 50%;
+    }
+    100%{
+        background-position:0% 50%;
+    }
+}
+
+@keyframes fadeUp{
+    from{
+        opacity:0;
+        transform:translateY(30px);
+    }
+
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+section{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:14px;
+
+    padding:30px;
+    margin-bottom:25px;
+
+    opacity:0;
+    transform:translateY(30px);
+
+    animation:fadeUp .8s ease forwards;
+}
+
+section:nth-child(1){animation-delay:.1s;}
+section:nth-child(2){animation-delay:.2s;}
+section:nth-child(3){animation-delay:.3s;}
+section:nth-child(4){animation-delay:.4s;}
+section:nth-child(5){animation-delay:.5s;}
+section:nth-child(6){animation-delay:.6s;}
+section:nth-child(7){animation-delay:.7s;}
+    </style>
+</head>
+
+<body>
+
+<header>
+
+    <h1>Criminalidade no Brasil</h1>
+
+   <p>
+    Análise Inteligente da Criminalidade e Segurança Pública.<br>
+    Utilizando Python, Pandas, Streamlit, SQLAlchemy e ferramentas de Business Intelligence.
+</p>
+
+</header>
+
+<main>
+
+    <section>
+
+        <h2>Sobre o Projeto</h2>
+
+        <p>
+            Este projeto apresenta uma análise exploratória sobre criminalidade
+            no Brasil utilizando uma base de dados estruturada contendo registros
+            de ocorrências, vítimas, prisões, níveis de risco e indicadores de violência.
+        </p>
+
+        <br>
+
+        <p>
+            O objetivo é identificar padrões criminais, compreender diferenças
+            regionais e fornecer informações que auxiliem na interpretação dos
+            cenários de segurança pública por meio da análise de dados.
+        </p>
+
+    </section>
+
+    <section>
+
+        <h2>Perguntas de Negócio</h2>
+
+        <ul>
+            <li>Quais regiões apresentam os maiores índices de criminalidade?</li>
+            <li>Quais tipos de crime são mais frequentes?</li>
+            <li>Existe relação entre renda média e violência?</li>
+            <li>Quais estados registram mais ocorrências?</li>
+            <li>Como a criminalidade varia ao longo do tempo?</li>
+            <li>Quais cidades apresentam maior nível de risco?</li>
+        </ul>
+
+    </section>
+
+    <section>
+
+        <h2>Indicadores Analisados</h2>
+
+        <div class="grid">
+
+            <div class="card">
+                <strong>Total de Ocorrências</strong>
+                <br>
+                Quantidade total de crimes registrados.
+            </div>
+
+            <div class="card">
+                <strong>Total de Vítimas</strong>
+                <br>
+                Pessoas afetadas pelas ocorrências.
+            </div>
+
+            <div class="card">
+                <strong>Total de Prisões</strong>
+                <br>
+                Prisões registradas após ocorrências.
+            </div>
+
+            <div class="card">
+                <strong>Índice Médio de Violência</strong>
+                <br>
+                Média dos indicadores presentes na base.
+            </div>
+
+        </div>
+
+    </section>
+
+    <section>
+
+        <h2>Tecnologias Utilizadas</h2>
+
+        <div class="grid">
+
+            <div class="card">Python</div>
+            <div class="card">Pandas</div>
+            <div class="card">Matplotlib</div>
+            <div class="card">Seaborn</div>
+            <div class="card">Streamlit</div>
+            <div class="card">SQLAlchemy</div>
+            <div class="card">SQLite</div>
+            <div class="card">GitHub Pages</div>
+
+        </div>
+
+    </section>
+
+    <section>
+
+        <h2>Arquivos do Projeto</h2>
+
+        <p>
+            Acesse os principais componentes do projeto:
+        </p>
+
+        <br>
+
+        <a class="button" href="#">README</a>
+
+        <a class="button" href="#">
+            Notebook de Análise
+        </a>
+
+        <a class="button" href="#">
+            Base de Dados
+        </a>
+
+    </section>
+
+    <section>
+
+        <h2>Dashboard Interativo</h2>
+
+        <p>
+            O dashboard principal foi desenvolvido utilizando Streamlit e
+            permite explorar os dados através de filtros interativos,
+            KPIs, gráficos e análises estatísticas.
+        </p>
+
+        <br>
+
+        <a class="button" href="#" target="_blank">
+            Acessar Dashboard Streamlit
+        </a>
+
+    </section>
+
+    <section>
+
+        <h2>Objetivo Pedagógico</h2>
+
+        <p>
+            O projeto demonstra a aplicação prática de técnicas de análise de dados,
+            engenharia de atributos, criação de KPIs e desenvolvimento de dashboards interativos.
+        </p>
+
+        <br>
+
+        <p>
+            Além da exploração estatística, a solução permite visualizar tendências
+            criminais e apoiar análises baseadas em evidências para melhor compreensão
+            dos cenários de segurança pública.
+        </p>
+
+    </section>
+
+</main>
+
+<footer>
+
+    Projeto desenvolvido para fins educacionais • Linguagem de Programação • Análise e Visualização de Dados
+
+</footer>
+
+</body>
+</html>
