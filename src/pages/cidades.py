@@ -4,16 +4,20 @@ import pandas as pd
 
 from src.components import page_header, section, insight
 from src.style import TEMPLATE, CORES, ESCALA_ROXA
+
+
 def render(df: pd.DataFrame) -> None:
     page_header(
         "Por Cidade",
         "Comparativo e ranking entre cidades brasileiras"
     )
+
     if df.empty:
         st.warning("Nenhum dado encontrado para os filtros selecionados.")
         return
 
-    # ── Ranking Top 15 ────────────────────────────────────────────────────────
+    # Ranking das 15 cidades com mais ocorrências no período filtrado
+    # head(15) evita que o gráfico fique poluído com muitas barras
     section("Ranking de ocorrências por cidade (Top 15)")
     rank = (df.groupby("cidade")["ocorrencias"].sum()
             .reset_index()
@@ -49,7 +53,8 @@ def render(df: pd.DataFrame) -> None:
     st.plotly_chart(fig, use_container_width=True,
                     config={"displayModeBar": False})
 
-    # ── Índice de violência ────────────────────────────────────────────────────
+    # Top 10 por índice médio de violência — diferente do ranking acima
+    # Uma cidade pode ter poucos crimes mas índice alto (população menor)
     section("Índice médio de violência (Top 10)")
     idx_cid = (df.groupby("cidade")["indice_violencia"].mean()
                .reset_index()
@@ -84,7 +89,8 @@ def render(df: pd.DataFrame) -> None:
     st.plotly_chart(fig2, use_container_width=True,
                     config={"displayModeBar": False})
 
-    # ── Dispersão renda x violência ───────────────────────────────────────────
+    # Gráfico de dispersão: renda x violência com tamanho proporcional às ocorrências
+    # O agg() aqui consolida os dados por cidade pegando média ou soma conforme faz sentido
     section("Dispersão — renda média × índice de violência")
     disp = df.groupby("cidade").agg(
         renda_media=("renda_media", "mean"),

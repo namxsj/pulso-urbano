@@ -5,6 +5,8 @@ import pandas as pd
 from src.components import page_header, section, insight, ranking_card
 from src.style import TEMPLATE, ESCALA_ROXA
 
+# Coordenadas geográficas fixas de cada cidade do dataset
+# Mapbox precisa de lat/lon explícitos; não tem como inferir do nome da cidade
 COORDS = {
     "Manaus": (-3.1190, -60.0217), "Belém": (-1.4558, -48.5044),
     "Santarém": (-2.4448, -54.7081), "Porto Velho": (-8.7612, -63.9004),
@@ -27,21 +29,25 @@ COORDS = {
     "Cuiabá": (-15.6014, -56.0979), "Campo Grande": (-20.4697, -54.6201),
 }
 
+# Métricas disponíveis pra visualizar no mapa — chave = coluna do df, valor = label
 METRICAS = {
     "ocorrencias":      "Ocorrências",
     "vitimas":          "Vítimas",
     "indice_violencia": "Índice de violência",
 }
+
+
 def render(df: pd.DataFrame) -> None:
     page_header(
         "Mapa",
         "Distribuição geográfica das cidades brasileiras"
     )
+
     if df.empty:
         st.warning("Nenhum dado encontrado para os filtros selecionados.")
         return
 
-    # ── Botões de métrica ──────────────────────────────────────────────────────
+    # Botões de seleção de métrica — armazenados no session_state pra não resetar
     if "mapa_metrica" not in st.session_state:
         st.session_state["mapa_metrica"] = "ocorrencias"
 
@@ -55,7 +61,7 @@ def render(df: pd.DataFrame) -> None:
     metrica       = st.session_state["mapa_metrica"]
     label_metrica = METRICAS[metrica]
 
-    # ── Prepara dados ──────────────────────────────────────────────────────────
+    # Consolida os dados por cidade — uma linha por cidade com a soma/média de cada métrica
     map_df = df.groupby("cidade").agg(
         ocorrencias=("ocorrencias", "sum"),
         vitimas=("vitimas", "sum"),
@@ -64,20 +70,24 @@ def render(df: pd.DataFrame) -> None:
         uf=("uf", "first"),
     ).reset_index()
     map_df["indice_violencia"] = map_df["indice_violencia"].round(1)
+
+    # Adiciona as colunas de lat/lon buscando no dicionário de coordenadas
+    # Cidades sem coordenadas ficam com (0, 0) e são removidas na linha seguinte
     map_df["lat"] = map_df["cidade"].map(lambda c: COORDS.get(c, (0, 0))[0])
     map_df["lon"] = map_df["cidade"].map(lambda c: COORDS.get(c, (0, 0))[1])
     map_df = map_df[map_df["lat"] != 0]
 
-    # ── Layout: mapa (esq) + ranking (dir) ────────────────────────────────────
+    # Layout dividido: mapa à esquerda (3/4) e ranking à direita (1/4)
     col_map, col_rank = st.columns([3, 1], gap="medium")
 
-    # ── Tooltip em linguagem natural ──────────────────────────────────────────
+    # Função auxiliar que traduz o índice numérico em um label de risco legível
     def nivel_risco_label(idx):
         if idx < 30:   return "🟢 Baixo"
         if idx < 55:   return "🟡 Médio"
         if idx < 75:   return "🟠 Alto"
         return "🔴 Crítico"
 
+    # Monta o texto do tooltip pra cada cidade usando apply() no dataframe
     map_df["tooltip"] = map_df.apply(
         lambda r: (
             f"<b style='font-size:15px'>{r['cidade']}</b><br>"
@@ -96,6 +106,7 @@ def render(df: pd.DataFrame) -> None:
             size=metrica, color=metrica,
             hover_name="cidade",
             custom_data=["tooltip"],
+            # Desativa os campos padrão do hover pra usar só o tooltip customizado
             hover_data={
                 "uf": False, "regiao": False,
                 "ocorrencias": False, "vitimas": False,
@@ -135,6 +146,8 @@ def render(df: pd.DataFrame) -> None:
                         config={"displayModeBar": False})
 
     with col_rank:
+        # Ranking lateral das 10 cidades na métrica selecionada
+        # pct calcula a proporção em relação ao máximo pra preencher a barra de progresso
         top10   = map_df.sort_values(metrica, ascending=False).head(10).reset_index(drop=True)
         val_max = top10[metrica].max()
 
@@ -151,7 +164,7 @@ def render(df: pd.DataFrame) -> None:
                    if metrica != "indice_violencia" else f"{val:.1f}")
             ranking_card(row["cidade"], label_metrica, fmt, pct)
 
-    # ── Gráficos secundários ───────────────────────────────────────────────────
+    # Gráficos secundários abaixo do mapa para análise por UF e por região
     st.markdown("<div style='height:8px'></div>", unsafe_allow_html=True)
 
     section("Ocorrências por UF")

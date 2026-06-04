@@ -5,6 +5,8 @@ import pandas as pd
 
 from src.components import page_header, section, insight, kpi
 from src.style import TEMPLATE, ESCALA_ROXA
+
+
 def render(df: pd.DataFrame) -> None:
     page_header(
         "Visão Geral",
@@ -12,11 +14,13 @@ def render(df: pd.DataFrame) -> None:
         badge="2015 – 2024",
         badge_extra="Atualizado"
     )
+
     if df.empty:
         st.warning("Nenhum dado encontrado para os filtros selecionados.")
         return
 
-    # ── KPIs ──────────────────────────────────────────────────────────────────
+    # KPIs principais — agregações simples sobre o dataframe filtrado
+    # Cada métrica resume uma dimensão diferente do fenômeno criminal
     total_oc    = df["ocorrencias"].sum()
     total_vit   = df["vitimas"].sum()
     total_pris  = df["prisoes"].sum()
@@ -26,6 +30,7 @@ def render(df: pd.DataFrame) -> None:
     regiao_crit = df.groupby("regiao")["ocorrencias"].sum().idxmax()
     cidades_n   = df["cidade"].nunique()
 
+    # Primeira linha de KPIs: métricas absolutas de volume
     cols = st.columns(4)
     with cols[0]:
         kpi("Total de ocorrências", f"{total_oc:,}".replace(",", "."),
@@ -42,6 +47,7 @@ def render(df: pd.DataFrame) -> None:
 
     st.markdown("<div style='height:10px'></div>", unsafe_allow_html=True)
 
+    # Segunda linha de KPIs: destaques qualitativos (cidade, crime, região)
     cols2 = st.columns(3)
     with cols2[0]:
         kpi("Cidade mais crítica", cidade_crit,
@@ -55,7 +61,8 @@ def render(df: pd.DataFrame) -> None:
 
     st.markdown("<div style='height:16px'></div>", unsafe_allow_html=True)
 
-    # ── Linha anual ────────────────────────────────────────────────────────────
+    # Gráfico de linha: evolução anual do total de ocorrências
+    # Usamos go.Figure em vez de px pra ter controle fino sobre o preenchimento
     section("Evolução anual — total de ocorrências")
     ev = df.groupby("ano")["ocorrencias"].sum().reset_index()
     fig = go.Figure()
@@ -88,7 +95,7 @@ def render(df: pd.DataFrame) -> None:
     st.plotly_chart(fig, use_container_width=True,
                     config={"displayModeBar": False})
 
-    # ── Donuts lado a lado ─────────────────────────────────────────────────────
+    # Dois donuts lado a lado: distribuição por nível de risco e por tipo de crime
     col_d1, col_d2 = st.columns(2)
 
     LEGEND_STYLE = dict(
@@ -102,6 +109,7 @@ def render(df: pd.DataFrame) -> None:
 
     with col_d1:
         section("Distribuição por nível de risco")
+        # Ordena as categorias de risco do menor pro maior pra facilitar leitura
         ordem = ["Baixo", "Médio", "Alto", "Crítico"]
         nr = df.groupby("nivel_risco")["ocorrencias"].sum().reset_index()
         nr["nivel_risco"] = pd.Categorical(
@@ -171,7 +179,7 @@ def render(df: pd.DataFrame) -> None:
         st.plotly_chart(fig4, use_container_width=True,
                         config={"displayModeBar": False})
 
-    # ── Barras região ──────────────────────────────────────────────────────────
+    # Gráfico de barras com o total de ocorrências por região do Brasil
     section("Ocorrências por região")
     reg = (df.groupby("regiao")["ocorrencias"].sum()
            .reset_index().sort_values("ocorrencias", ascending=False))
@@ -204,7 +212,7 @@ def render(df: pd.DataFrame) -> None:
     st.plotly_chart(fig3, use_container_width=True,
                     config={"displayModeBar": False})
 
-    # ── Insight ────────────────────────────────────────────────────────────────
+    # Interpretação textual dos principais achados desta página
     st.markdown("<div style='height:4px'></div>", unsafe_allow_html=True)
     insight(f"""
     <strong>Interpretação:</strong> No período selecionado foram registradas
@@ -212,4 +220,28 @@ def render(df: pd.DataFrame) -> None:
     A região <strong>{regiao_crit}</strong> concentra o maior volume de crimes, enquanto
     <strong>{crime_freq}</strong> é o tipo mais frequente. O índice médio de violência é
     <strong>{idx_medio}</strong>, com <strong>{cidade_crit}</strong> liderando o ranking urbano.
+    """.replace(",", "."))
+
+    # Conclusão executiva — síntese final para tomada de decisão
+    # Resume os principais achados e aponta direções para políticas públicas
+    st.markdown("<div style='height:12px'></div>", unsafe_allow_html=True)
+    section("Conclusão Executiva")
+
+    taxa_resolucao = round((total_pris / total_oc * 100), 1) if total_oc > 0 else 0
+
+    insight(f"""
+    <strong>Conclusão:</strong> A análise dos dados de criminalidade no período coberto
+    aponta padrões estruturais que merecem atenção das políticas públicas de segurança.
+    A região <strong>{regiao_crit}</strong> lidera em volume absoluto de ocorrências,
+    o que reflete tanto maior densidade populacional quanto possível concentração de
+    vulnerabilidades socioeconômicas. O crime de <strong>{crime_freq}</strong> se destaca
+    como o mais recorrente, sugerindo que ações preventivas focadas nessa modalidade
+    teriam maior impacto na redução geral dos índices.<br><br>
+    A taxa de resolução (prisões/ocorrências) no período foi de aproximadamente
+    <strong>{taxa_resolucao}%</strong>, o que indica espaço para melhoria na efetividade
+    das respostas policiais. A cidade de <strong>{cidade_crit}</strong> requer atenção
+    prioritária por concentrar o maior volume de registros entre todas as analisadas.
+    Em síntese, os dados reforçam a necessidade de políticas diferenciadas por região,
+    com foco em prevenção, presença policial e redução das desigualdades que alimentam
+    os índices de violência.
     """.replace(",", "."))

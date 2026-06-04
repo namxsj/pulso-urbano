@@ -4,16 +4,20 @@ import pandas as pd
 
 from src.components import page_header, section, insight
 from src.style import TEMPLATE, CORES, ESCALA_CRIME
+
+
 def render(df: pd.DataFrame) -> None:
     page_header(
         "Por Crime",
         "Frequência, horários e padrões criminais"
     )
+
     if df.empty:
         st.warning("Nenhum dado encontrado para os filtros selecionados.")
         return
 
-    # ── Barras tipo ────────────────────────────────────────────────────────────
+    # Barras simples com o total de ocorrências por tipo de crime
+    # Ordenado de forma decrescente pra deixar o mais frequente em primeiro
     section("Ocorrências por tipo de crime")
     tc = (df.groupby("tipo_crime")["ocorrencias"].sum()
           .reset_index()
@@ -47,12 +51,14 @@ def render(df: pd.DataFrame) -> None:
     st.plotly_chart(fig, use_container_width=True,
                     config={"displayModeBar": False})
 
-    # ── Heatmap crime x período ────────────────────────────────────────────────
+    # Heatmap cruzando tipo de crime com período do dia
+    # pivot() gera a matriz necessária pro imshow(); fillna(0) evita erros no render
     section("Heatmap — crime × período do dia")
     hc = df.groupby(["tipo_crime", "periodo_dia"])["ocorrencias"].sum().reset_index()
     hc_piv = hc.pivot(
         index="tipo_crime", columns="periodo_dia", values="ocorrencias"
     ).fillna(0)
+    # Reordena as colunas na sequência cronológica do dia
     ordem_per = [p for p in ["Madrugada", "Manhã", "Tarde", "Noite"]
                  if p in hc_piv.columns]
     hc_piv = hc_piv[ordem_per]
@@ -82,7 +88,7 @@ def render(df: pd.DataFrame) -> None:
     st.plotly_chart(fig2, use_container_width=True,
                     config={"displayModeBar": False})
 
-    # ── Vítimas ────────────────────────────────────────────────────────────────
+    # Barras horizontais de vítimas — ascending=True deixa o maior no topo do gráfico
     section("Vítimas por tipo de crime")
     vit = (df.groupby("tipo_crime")["vitimas"].sum()
            .reset_index()
@@ -116,7 +122,8 @@ def render(df: pd.DataFrame) -> None:
     st.plotly_chart(fig3, use_container_width=True,
                     config={"displayModeBar": False})
 
-    # ── Prisões ────────────────────────────────────────────────────────────────
+    # Comparativo de prisões por crime: complementa a visão de vítimas
+    # A diferença entre os dois gráficos revela a efetividade policial por modalidade
     section("Prisões por tipo de crime")
     pris = (df.groupby("tipo_crime")["prisoes"].sum()
             .reset_index()

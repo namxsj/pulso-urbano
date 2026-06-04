@@ -2,16 +2,19 @@ import streamlit as st
 import pandas as pd
 
 from src.components import page_header, section, kpi
+
+
 def render(df: pd.DataFrame) -> None:
     page_header(
         "🗃️ Explorador de Dados",
         "Tabela completa com os dados filtrados e estatísticas descritivas"
     )
+
     if df.empty:
         st.warning("Nenhum dado encontrado para os filtros selecionados.")
         return
 
-    # ── KPIs rápidos ──────────────────────────────────────────────────────────
+    # KPIs rápidos pra dar contexto sobre o recorte filtrado antes de mostrar a tabela
     c1, c2, c3, c4 = st.columns(4)
     with c1:
         kpi("Registros filtrados", f"{len(df):,}".replace(",", "."), idx=0)
@@ -24,7 +27,8 @@ def render(df: pd.DataFrame) -> None:
 
     st.markdown("<div style='height:14px'></div>", unsafe_allow_html=True)
 
-    # ── Tabela dinâmica ────────────────────────────────────────────────────────
+    # Tabela interativa com os dados filtrados
+    # column_config define o formato de exibição de cada coluna sem alterar o dado original
     section("Tabela de dados")
     st.dataframe(
         df.sort_values(["ano", "mes", "cidade"]),
@@ -49,7 +53,7 @@ def render(df: pd.DataFrame) -> None:
         },
     )
 
-    # ── Exportar ───────────────────────────────────────────────────────────────
+    # Botão de exportação — gera o CSV a partir do df filtrado em memória
     st.markdown("<div style='height:8px'></div>", unsafe_allow_html=True)
     csv = df.to_csv(index=False).encode("utf-8")
     st.download_button(
@@ -57,7 +61,8 @@ def render(df: pd.DataFrame) -> None:
         csv, "criminalidade_filtrado.csv", "text/csv",
     )
 
-    # ── Estatísticas descritivas ───────────────────────────────────────────────
+    # Estatísticas descritivas automáticas do pandas: média, desvio, quartis etc.
+    # Limitamos às colunas numéricas relevantes pra não poluir com id e afins
     st.markdown("<div style='height:14px'></div>", unsafe_allow_html=True)
     section("Estatísticas descritivas")
     cols_num = ["ocorrencias", "vitimas", "prisoes", "renda_media", "indice_violencia"]

@@ -4,17 +4,21 @@ import pandas as pd
 
 from src.components import page_header, section, insight
 from src.style import TEMPLATE, CORES, ESCALA_CRIME
+
+
 def render(df: pd.DataFrame) -> None:
     page_header(
         "Análise Temporal",
         "Evolução da criminalidade ao longo dos anos",
         badge="2015 – 2024"
     )
+
     if df.empty:
         st.warning("Nenhum dado encontrado para os filtros selecionados.")
         return
 
-    # ── Linha por tipo ─────────────────────────────────────────────────────────
+    # Gráfico de linhas com uma série por tipo de crime ao longo dos anos
+    # Permite comparar se certos crimes crescem mais que outros no período
     section("Ocorrências por ano e tipo de crime")
     ev2 = df.groupby(["ano", "tipo_crime"])["ocorrencias"].sum().reset_index()
     fig = px.line(
@@ -43,7 +47,7 @@ def render(df: pd.DataFrame) -> None:
     st.plotly_chart(fig, use_container_width=True,
                     config={"displayModeBar": False})
 
-    # ── Área por região ────────────────────────────────────────────────────────
+    # Gráfico de área empilhada por região — bom pra ver a composição ao longo do tempo
     section("Ocorrências por ano e região")
     ev3 = df.groupby(["ano", "regiao"])["ocorrencias"].sum().reset_index()
     fig2 = px.area(
@@ -72,7 +76,8 @@ def render(df: pd.DataFrame) -> None:
     st.plotly_chart(fig2, use_container_width=True,
                     config={"displayModeBar": False})
 
-    # ── Heatmap mês x ano ─────────────────────────────────────────────────────
+    # Heatmap mês x ano: identifica sazonalidade — quais meses são mais críticos
+    # pivot() transforma o DataFrame longo em uma matriz mês x ano
     section("Heatmap — ocorrências por mês e ano")
     heat = df.groupby(["ano", "mes"])["ocorrencias"].sum().reset_index()
     heat_piv = heat.pivot(index="mes", columns="ano",
@@ -88,7 +93,6 @@ def render(df: pd.DataFrame) -> None:
         color_continuous_scale=ESCALA_CRIME,
         aspect="auto", text_auto=True,
     )
-    # Force all year labels to show on x-axis
     anos_cols = [str(c) for c in heat_piv.columns]
     fig3.update_layout(paper_bgcolor="#0b0e17", plot_bgcolor="#0b0e17",
         template=TEMPLATE, height=320,
@@ -115,7 +119,8 @@ def render(df: pd.DataFrame) -> None:
     st.plotly_chart(fig3, use_container_width=True,
                     config={"displayModeBar": False})
 
-    # ── Barras período do dia ─────────────────────────────────────────────────
+    # Barras agrupadas por período do dia — mostra em quais horários os crimes acontecem
+    # Categorical com ordem definida garante que a sequência do dia apareça correta
     section("Período do dia mais crítico por ano")
     per = df.groupby(["ano", "periodo_dia"])["ocorrencias"].sum().reset_index()
     ordem_per = ["Madrugada", "Manhã", "Tarde", "Noite"]
