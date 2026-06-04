@@ -71,4 +71,4 @@ streamlit run app.py
 
 ## Autor
 
-Projeto G2 — Tema 15 | Análise e Visualização de Dados — La Salle
+Projeto G2 — Tema 15 | Análise e Visualização de Dados — La Salle | Júlia Bittencourt & Mariana Moura
