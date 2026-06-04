@@ -1,0 +1,17 @@
+# Cache do Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Poetry
+.venv/
+poetry.lock
+dist/
+*.egg-info/
+
+# Streamlit
+.streamlit/
+
+# Dados sensíveis / temporários
+*.log
+*.tmp
